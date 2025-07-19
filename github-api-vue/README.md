@@ -34,7 +34,7 @@ npm run build
 ### 3. gh-pages 패키지 설치 및 배포 스크립트 추가
 
 ```sh
-npm install --save-dev gh-pages
+npm install --save-dev gh-pages 
 ```
 
 `package.json`에 아래 스크립트 추가:
