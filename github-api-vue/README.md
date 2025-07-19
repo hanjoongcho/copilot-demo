@@ -16,13 +16,13 @@ Learn more about IDE Support for Vue in the [Vue Docs Scaling up Guide](https://
 
 ```js
 // vite.config.js
-import { defineConfig } from 'vite'
-import vue from '@vitejs/plugin-vue'
+import { defineConfig } from 'vite';
+import vue from '@vitejs/plugin-vue';
 
 export default defineConfig({
   plugins: [vue()],
   base: '/copilot-demo/', // 리포지토리명으로 변경
-})
+});
 ```
 
 ### 2. 빌드
@@ -34,7 +34,7 @@ npm run build
 ### 3. gh-pages 패키지 설치 및 배포 스크립트 추가
 
 ```sh
-npm install --save-dev gh-pages 
+npm install --save-dev gh-pages
 ```
 
 `package.json`에 아래 스크립트 추가:
@@ -52,6 +52,13 @@ npm install --save-dev gh-pages
 
 ```sh
 npm run deploy
+```
+
+#### 4.1. 로컬 Git 인증 토큰이 등록되지 않은 경우
+
+```bash
+git remote set-url origin https://<토큰>@github.com/유저명/레포명.git
+
 ```
 
 ### 5. GitHub Pages 설정
