@@ -39,30 +39,30 @@
     </el-col> -->
     <!-- 우측 카드: 트리 목록 -->
     <el-col :span="24" class="right-col">
-      <el-card shadow="hover" class="right-card">
-        <template #header>
+      <div class="right-card">
+        <!-- <template #header>
           <span>파일/디렉토리 트리</span>
-        </template>
+        </template> -->
+        <el-form :inline="true" @submit.prevent>
+          <el-form-item>
+            <el-input
+              v-model="token"
+              type="password"
+              placeholder="Personal Access Token"
+              style="width: 160px"
+              show-password
+            />
+            <el-button
+              type="primary"
+              :loading="loading"
+              @click="fetchRepo"
+              style="margin-left: 10px"
+              >조회</el-button
+            >
+          </el-form-item>
+          <el-form-item> </el-form-item>
+        </el-form>
         <div class="tree-scroll-area">
-          <el-form :inline="true" @submit.prevent>
-            <el-form-item>
-              <el-input
-                v-model="token"
-                type="password"
-                placeholder="Personal Access Token"
-                style="width: 260px"
-                show-password
-              />
-              <el-button
-                type="primary"
-                :loading="loading"
-                @click="fetchRepo"
-                style="margin-left: 10px"
-                >조회</el-button
-              >
-            </el-form-item>
-            <el-form-item> </el-form-item>
-          </el-form>
           <el-skeleton v-if="loading" :rows="6" animated />
           <template v-else>
             <div v-if="tree && tree.length">
@@ -75,14 +75,33 @@
             </div>
           </template>
         </div>
-      </el-card>
+      </div>
     </el-col>
     <!-- 파일 본문 다이얼로그 -->
-    <el-dialog v-model="dialogVisible" fullscreen width="60vw" :title="dialogTitle" top="5vh">
+    <el-dialog
+      v-model="dialogVisible"
+      fullscreen
+      width="60vw"
+      :title="dialogTitle"
+      top="5vh"
+      append-to-body
+      :close-on-click-modal="false"
+      :show-close="true"
+    >
       <template #default>
+        <!-- 플로팅 닫기 버튼: 우측 하단 -->
+        <el-button
+          class="dialog-float-close"
+          type="primary"
+          @click="dialogVisible = false"
+          title="닫기"
+        >
+          Close
+        </el-button>
         <v-md-preview height="50vh" v-if="dialogContent" :text="dialogContent" />
         <el-skeleton v-else :rows="6" animated />
       </template>
+      <template #footer></template>
     </el-dialog>
   </el-row>
 </template>
@@ -244,18 +263,18 @@
   .full-width-row {
     width: 100%;
     max-width: 100%;
-    min-height: 500px;
+    /* min-height: 500px; */
     margin: 0;
     padding: 0;
     display: flex;
     box-sizing: border-box;
-    height: calc(100vh - 1rem);
   }
   .left-col,
   .right-col {
     height: 100%;
     display: flex;
     align-items: stretch;
+    padding: 5px;
   }
   .divider-col {
     height: 90dvh;
@@ -263,8 +282,8 @@
   .left-card,
   .right-card {
     width: 100%;
-    height: calc(100%);
-    min-height: 400px;
+    /* height: calc(100%); */
+    /* min-height: 400px; */
     display: flex;
     flex-direction: column;
     text-align: left;
@@ -273,10 +292,10 @@
     padding: 0;
   }
   .tree-scroll-area {
-    flex: 1 1 auto;
+    /* flex: 1 1 auto; */
     overflow-y: auto;
-    padding: 24px;
-    height: calc(100% - 60px);
+    padding: 5px;
+    height: calc(100vh - 80px);
   }
   .mb-2 {
     margin-bottom: 16px;
@@ -291,5 +310,15 @@
   }
   :deep(.el-dialog__body) {
     text-align: left;
+  }
+  :deep(.github-markdown-body) {
+    font-size: 12px;
+    padding: 0;
+  }
+  .dialog-float-close {
+    position: fixed;
+    right: 16px;
+    bottom: 16px;
+    z-index: 2001;
   }
 </style>
