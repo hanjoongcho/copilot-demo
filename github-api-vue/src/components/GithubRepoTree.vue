@@ -1,7 +1,7 @@
 <template>
   <el-row :gutter="0" class="github-repo-tree-layout full-width-row">
     <!-- 좌측 카드: 토큰 입력, 저장소 정보, 에러, 로딩 -->
-    <el-col :span="11" class="left-col">
+    <!-- <el-col :span="11" class="left-col">
       <el-card shadow="hover" class="left-card">
         <el-alert v-if="error" :title="error" type="error" show-icon class="mb-2" />
         <el-skeleton v-if="loading" rows="4" animated />
@@ -32,19 +32,38 @@
           </el-card>
         </template>
       </el-card>
-    </el-col>
+    </el-col> -->
     <!-- 구분선 -->
-    <el-col :span="2">
+    <!-- <el-col :span="2">
       <el-divider direction="vertical" class="divider-col" />
-    </el-col>
+    </el-col> -->
     <!-- 우측 카드: 트리 목록 -->
-    <el-col :span="11" class="right-col">
+    <el-col :span="24" class="right-col">
       <el-card shadow="hover" class="right-card">
         <template #header>
           <span>파일/디렉토리 트리</span>
         </template>
         <div class="tree-scroll-area">
-          <el-skeleton v-if="loading" rows="6" animated />
+          <el-form :inline="true" @submit.prevent>
+            <el-form-item>
+              <el-input
+                v-model="token"
+                type="password"
+                placeholder="Personal Access Token"
+                style="width: 260px"
+                show-password
+              />
+              <el-button
+                type="primary"
+                :loading="loading"
+                @click="fetchRepo"
+                style="margin-left: 10px"
+                >조회</el-button
+              >
+            </el-form-item>
+            <el-form-item> </el-form-item>
+          </el-form>
+          <el-skeleton v-if="loading" :rows="6" animated />
           <template v-else>
             <div v-if="tree && tree.length">
               <div style="margin-bottom: 8px; color: #888">총 {{ tree.length }}개 항목</div>
@@ -59,7 +78,7 @@
       </el-card>
     </el-col>
     <!-- 파일 본문 다이얼로그 -->
-    <el-dialog v-model="dialogVisible" width="60vw" :title="dialogTitle" top="5vh">
+    <el-dialog v-model="dialogVisible" fullscreen width="60vw" :title="dialogTitle" top="5vh">
       <template #default>
         <v-md-preview height="50vh" v-if="dialogContent" :text="dialogContent" />
         <el-skeleton v-else rows="6" animated />
@@ -221,7 +240,7 @@
     padding: 0;
     display: flex;
     box-sizing: border-box;
-    height: 90dvh;
+    height: calc(100vh - 1rem);
   }
   .left-col,
   .right-col {
