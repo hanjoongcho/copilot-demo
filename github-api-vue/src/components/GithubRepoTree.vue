@@ -81,7 +81,7 @@
     <el-dialog v-model="dialogVisible" fullscreen width="60vw" :title="dialogTitle" top="5vh">
       <template #default>
         <v-md-preview height="50vh" v-if="dialogContent" :text="dialogContent" />
-        <el-skeleton v-else rows="6" animated />
+        <el-skeleton v-else :rows="6" animated />
       </template>
     </el-dialog>
   </el-row>
@@ -106,6 +106,7 @@
     ElEmpty,
     ElDivider,
     ElDialog,
+    ElMessageBox,
   } from 'element-plus';
 
   // 마크다운 뷰어 라이브러리(v-md-preview) import
@@ -199,6 +200,14 @@
     }
     // 파일 본문 가져오기
     if (data.path) {
+      // 확장자가 .md가 아니면 안내 메시지 후 팝업 열지 않음
+      if (!data.name?.toLowerCase().endsWith('.md')) {
+        ElMessageBox.alert('마크다운 파일(.md)만 상세보기가 가능합니다.', '알림', {
+          confirmButtonText: '확인',
+          type: 'warning',
+        });
+        return;
+      }
       dialogTitle.value = data.name || data.path;
       dialogContent.value = '';
       dialogVisible.value = true;
