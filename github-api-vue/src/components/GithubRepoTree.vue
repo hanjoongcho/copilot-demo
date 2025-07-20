@@ -48,7 +48,7 @@
           <template v-else>
             <div v-if="tree && tree.length">
               <div style="margin-bottom: 8px; color: #888">총 {{ tree.length }}개 항목</div>
-              <TreeView :nodes="tree" />
+              <el-tree :data="tree" @node-click="onTreeNodeClick" />
             </div>
             <el-empty v-else-if="tree && !tree.length" description="파일이 없습니다." />
             <div v-else style="color: #bbb">
@@ -58,11 +58,18 @@
         </div>
       </el-card>
     </el-col>
+    <!-- 파일 본문 다이얼로그 -->
+    <el-dialog v-model="dialogVisible" width="60vw" :title="dialogTitle" top="5vh">
+      <template #default>
+        <v-md-preview height="50vh" v-if="dialogContent" :text="dialogContent" />
+        <el-skeleton v-else rows="6" animated />
+      </template>
+    </el-dialog>
   </el-row>
 </template>
 
 <script setup>
-  import { ref } from 'vue';
+  import { ref, onMounted } from 'vue';
   import axios from 'axios';
   import TreeView from './TreeView.vue';
   import 'element-plus/dist/index.css';
@@ -78,13 +85,37 @@
     ElSkeleton,
     ElScrollbar,
     ElEmpty,
+    ElDivider,
+    ElDialog,
   } from 'element-plus';
 
-  const token = ref('');
+  // 마크다운 뷰어 라이브러리(v-md-preview) import
+  import VMdPreview from '@kangc/v-md-editor/lib/preview';
+  import '@kangc/v-md-editor/lib/style/preview.css';
+  import githubTheme from '@kangc/v-md-editor/lib/theme/github.js';
+  import '@kangc/v-md-editor/lib/theme/style/github.css';
+  import VMdEditor from '@kangc/v-md-editor';
+  VMdEditor.use(githubTheme);
+
+  function getTokenFromUrl() {
+    const params = new URLSearchParams(window.location.search);
+    return params.get('token') || '';
+  }
+
+  const token = ref(getTokenFromUrl());
   const repo = ref(null);
   const tree = ref(null);
   const loading = ref(false);
   const error = ref('');
+
+  // 파일 본문 다이얼로그 상태
+  const dialogVisible = ref(false);
+  const dialogTitle = ref('');
+  const dialogContent = ref('');
+
+  onMounted(() => {
+    token.value = getTokenFromUrl();
+  });
 
   async function fetchRepo() {
     if (!token.value) {
@@ -121,11 +152,11 @@
               if (item.type === 'dir') {
                 return {
                   ...item,
-                  name: item.name,
+                  label: item.name,
                   children: await fetchTree(item.path),
                 };
               } else {
-                return { ...item, name: item.name };
+                return { ...item, label: item.name };
               }
             })
           );
@@ -140,6 +171,44 @@
       loading.value = false;
     }
   }
+
+  // el-tree 노드 클릭 이벤트 핸들러
+  async function onTreeNodeClick(data, node, component) {
+    if (Array.isArray(data.children) && data.children.length > 0) {
+      // 디렉토리면 아무 동작 안함
+      return;
+    }
+    // 파일 본문 가져오기
+    if (data.path) {
+      dialogTitle.value = data.name || data.path;
+      dialogContent.value = '';
+      dialogVisible.value = true;
+      try {
+        const res = await axios.get(
+          `https://api.github.com/repos/hanjoongcho/self-development/contents/${encodeURIComponent(
+            data.path
+          )}`,
+          {
+            headers: {
+              Authorization: `Bearer ${token.value}`,
+              Accept: 'application/vnd.github.v3.raw',
+            },
+          }
+        );
+        // 파일이 text라면 바로, binary라면 base64 decode
+        if (typeof res.data === 'string') {
+          dialogContent.value = res.data;
+        } else if (res.data && res.data.content) {
+          const decoded = atob(res.data.content.replace(/\n/g, ''));
+          dialogContent.value = decoded;
+        } else {
+          dialogContent.value = '파일 본문을 가져올 수 없습니다.';
+        }
+      } catch (err) {
+        dialogContent.value = '파일 본문 조회 실패: ' + err;
+      }
+    }
+  }
 </script>
 
 <style scoped>
@@ -152,7 +221,7 @@
     padding: 0;
     display: flex;
     box-sizing: border-box;
-    height: 90dvh; /* 브라우저 높이의 90%를 더 자연스럽게 적용 (dvh: 동적 뷰포트 높이) */
+    height: 90dvh;
   }
   .left-col,
   .right-col {
@@ -161,7 +230,7 @@
     align-items: stretch;
   }
   .divider-col {
-    height: 90dvh; /* 브라우저 높이의 90%를 더 자연스럽게 적용 (dvh: 동적 뷰포트 높이) */
+    height: 90dvh;
   }
   .left-card,
   .right-card {
@@ -179,17 +248,20 @@
     flex: 1 1 auto;
     overflow-y: auto;
     padding: 24px;
-    height: calc(100% - 60px); /* 카드 헤더 높이 보정 */
+    height: calc(100% - 60px);
   }
   .mb-2 {
     margin-bottom: 16px;
   }
   /* el-card__body의 높이를 100%로 지정 */
   :deep(.el-card__body) {
-    height: calc(100% - 60px); /* 카드 헤더 높이 보정 */
+    height: calc(100% - 60px);
     display: flex;
     flex-direction: column;
     padding: 24px;
     box-sizing: border-box;
+  }
+  :deep(.el-dialog__body) {
+    text-align: left;
   }
 </style>

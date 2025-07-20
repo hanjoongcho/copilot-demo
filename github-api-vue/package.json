@@ -10,6 +10,7 @@
     "deploy": "gh-pages -d dist"
   },
   "dependencies": {
+    "@kangc/v-md-editor": "^2.3.18",
     "axios": "^1.10.0",
     "element-plus": "^2.10.4",
     "vue": "^3.5.17"
