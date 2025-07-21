@@ -43,7 +43,7 @@
         <!-- <template #header>
           <span>파일/디렉토리 트리</span>
         </template> -->
-        <el-form :inline="true" @submit.prevent>
+        <!-- <el-form :inline="true" @submit.prevent>
           <el-form-item>
             <el-input
               v-model="token"
@@ -60,20 +60,37 @@
               >조회</el-button
             >
           </el-form-item>
-          <el-form-item> </el-form-item>
-        </el-form>
+        </el-form> -->
+        <el-input
+          v-model="filterText"
+          placeholder="검색어 입력"
+          style="width: 100%"
+          clearable
+          @input="onFilterInput"
+        />
         <div class="tree-scroll-area">
-          <el-skeleton v-if="loading" :rows="6" animated />
-          <template v-else>
-            <div v-if="tree && tree.length">
-              <div style="margin-bottom: 8px; color: #888">총 {{ tree.length }}개 항목</div>
-              <el-tree :data="tree" @node-click="onTreeNodeClick" />
+          <!-- <el-skeleton v-if="loading" :rows="6" animated /> -->
+
+          <div>
+            <!-- <div v-if="!!tree" style="margin-bottom: 8px; color: #888">
+              총 {{ tree?.length }}개 항목
+            </div> -->
+            <div v-loading="loading" class="tree-container">
+              <el-tree
+                ref="treeRef"
+                :empty-text="state.emptyMessage"
+                :data="tree"
+                :filter-node-method="filterNode"
+                :default-expand-all="true"
+                :highlight-current="true"
+                @node-click="onTreeNodeClick"
+              />
             </div>
-            <el-empty v-else-if="tree && !tree.length" description="파일이 없습니다." />
-            <div v-else style="color: #bbb">
+          </div>
+          <!-- <el-empty v-else-if="tree && !tree.length" description="파일이 없습니다." /> -->
+          <!-- <div v-else style="color: #bbb">
               트리 정보를 조회하려면 토큰을 입력 후 조회를 누르세요.
-            </div>
-          </template>
+            </div> -->
         </div>
       </div>
     </el-col>
@@ -107,7 +124,7 @@
 </template>
 
 <script setup>
-  import { ref, onMounted } from 'vue';
+  import { ref, onMounted, reactive } from 'vue';
   import axios from 'axios';
   import TreeView from './TreeView.vue';
   import 'element-plus/dist/index.css';
@@ -152,8 +169,16 @@
   const dialogTitle = ref('');
   const dialogContent = ref('');
 
+  const filterText = ref('');
+  const treeRef = ref();
+
+  const state = reactive({
+    emptyMessage: '',
+  });
+
   onMounted(() => {
     token.value = getTokenFromUrl();
+    fetchRepo();
   });
 
   async function fetchRepo() {
@@ -208,6 +233,11 @@
       error.value = e?.response?.data?.message || e.message;
     } finally {
       loading.value = false;
+      if (tree.value && tree.value.length > 0) {
+        state.emptyMessage = '데이터를 조회중입니다.';
+      } else {
+        state.emptyMessage = '데이터가 존재하지 않습니다.';
+      }
     }
   }
 
@@ -256,6 +286,17 @@
       }
     }
   }
+
+  const filterNode = (value, data) => {
+    if (!value) return true;
+    return data.label && data.label.toLowerCase().includes(value.toLowerCase());
+  };
+
+  const onFilterInput = () => {
+    if (treeRef.value) {
+      treeRef.value.filter(filterText.value);
+    }
+  };
 </script>
 
 <style scoped>
@@ -295,7 +336,10 @@
     /* flex: 1 1 auto; */
     overflow-y: auto;
     padding: 5px;
-    height: calc(100vh - 80px);
+    height: calc(100vh - 55px);
+  }
+  .tree-container {
+    height: calc(100vh - 55px);
   }
   .mb-2 {
     margin-bottom: 16px;
