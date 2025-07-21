@@ -234,7 +234,7 @@
     } finally {
       loading.value = false;
       if (tree.value && tree.value.length > 0) {
-        state.emptyMessage = '데이터를 조회중입니다.';
+        state.emptyMessage = '';
       } else {
         state.emptyMessage = '데이터가 존재하지 않습니다.';
       }
@@ -315,7 +315,7 @@
     height: 100%;
     display: flex;
     align-items: stretch;
-    padding: 5px;
+    padding: 0px;
   }
   .divider-col {
     height: 90dvh;
@@ -335,11 +335,11 @@
   .tree-scroll-area {
     /* flex: 1 1 auto; */
     overflow-y: auto;
-    padding: 5px;
-    height: calc(100vh - 55px);
+    padding: 0px;
+    height: calc(100vh - 35px);
   }
   .tree-container {
-    height: calc(100vh - 55px);
+    height: calc(100vh - 35px);
   }
   .mb-2 {
     margin-bottom: 16px;
@@ -364,5 +364,66 @@
     right: 16px;
     bottom: 16px;
     z-index: 2001;
+  }
+
+  /* 크롬 다크모드 대응: prefers-color-scheme */
+  @media (prefers-color-scheme: dark) {
+    .github-repo-tree-layout,
+    .full-width-row,
+    .left-card,
+    .right-card,
+    .tree-scroll-area,
+    .el-card,
+    .el-dialog,
+    .el-tree,
+    :deep(.el-card__body),
+    :deep(.el-dialog__body),
+    :deep(.github-markdown-body) {
+      background-color: #181818 !important;
+      color: #e0e0e0 !important;
+    }
+    :deep(.el-input),
+    :deep(.el-input__wrapper),
+    :deep(.el-input__inner),
+    :deep(.el-form-item__content),
+    :deep(.el-tree-node__content),
+    :deep(.el-tree-node__label),
+    :deep(.el-empty__description) {
+      background-color: #232323 !important;
+      color: #e0e0e0 !important;
+      border-color: #444 !important;
+    }
+    :deep(.el-input__wrapper) {
+      box-shadow: 0 0 0 1px #444 inset !important;
+    }
+    :deep(.el-divider) {
+      border-color: #444 !important;
+    }
+    :deep(.el-card) {
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.5) !important;
+    }
+    :deep(.el-dialog__header) {
+      background: #232323 !important;
+      color: #e0e0e0 !important;
+    }
+    :deep(.el-button) {
+      background: #232323 !important;
+      color: #e0e0e0 !important;
+      border-color: #444 !important;
+    }
+    :deep(.el-button:hover) {
+      background: #444 !important;
+      color: #fff !important;
+    }
+    .tree-container,
+    :deep(.el-loading-mask),
+    :deep(.el-loading-spinner),
+    :deep(.el-loading-text) {
+      background-color: #181818 !important;
+      color: #e0e0e0 !important;
+    }
+    :deep(.el-loading-spinner .path) {
+      stroke: #e0e0e0 !important;
+    }
   }
 </style>
