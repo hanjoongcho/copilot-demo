@@ -1,81 +1,18 @@
 <template>
-  <el-row :gutter="0" class="github-repo-tree-layout full-width-row">
-    <!-- 좌측 카드: 토큰 입력, 저장소 정보, 에러, 로딩 -->
-    <!-- <el-col :span="11" class="left-col">
-      <el-card shadow="hover" class="left-card">
-        <el-alert v-if="error" :title="error" type="error" show-icon class="mb-2" />
-        <el-skeleton v-if="loading" rows="4" animated />
-        <template v-else>
-          <el-card class="mb-2" shadow="never">
-            <template #header>
-              <span>저장소 정보</span>
-            </template>
-
-            <h2>GitHub 저장소 트리 보기</h2>
-            <el-form :inline="true" @submit.prevent>
-              <el-form-item>
-                <el-input
-                  v-model="token"
-                  type="password"
-                  placeholder="Personal Access Token"
-                  style="width: 260px"
-                  show-password
-                />
-              </el-form-item>
-              <el-form-item>
-                <el-button type="primary" :loading="loading" @click="fetchRepo">조회</el-button>
-              </el-form-item>
-            </el-form>
-            <el-scrollbar>
-              <pre style="margin: 0">{{ repo }}</pre>
-            </el-scrollbar>
-          </el-card>
-        </template>
-      </el-card>
-    </el-col> -->
-    <!-- 구분선 -->
-    <!-- <el-col :span="2">
-      <el-divider direction="vertical" class="divider-col" />
-    </el-col> -->
-    <!-- 우측 카드: 트리 목록 -->
-    <el-col :span="24" class="right-col">
-      <div class="right-card">
-        <!-- <template #header>
-          <span>파일/디렉토리 트리</span>
-        </template> -->
-        <!-- <el-form :inline="true" @submit.prevent>
-          <el-form-item>
-            <el-input
-              v-model="token"
-              type="password"
-              placeholder="Personal Access Token"
-              style="width: 160px"
-              show-password
-            />
-            <el-button
-              type="primary"
-              :loading="loading"
-              @click="fetchRepo"
-              style="margin-left: 10px"
-              >조회</el-button
-            >
-          </el-form-item>
-        </el-form> -->
+  <el-row>
+    <el-col :span="24">
+      <div>
         <el-input
+          class="form-input"
           v-model="filterText"
-          placeholder="검색어 입력"
+          placeholder="Input to filter document titles"
           style="width: 100%"
           clearable
           @input="onFilterInput"
         />
-        <div class="tree-scroll-area">
-          <!-- <el-skeleton v-if="loading" :rows="6" animated /> -->
-
+        <el-scrollbar class="tree-scroll-area">
           <div>
-            <!-- <div v-if="!!tree" style="margin-bottom: 8px; color: #888">
-              총 {{ tree?.length }}개 항목
-            </div> -->
-            <div v-loading="loading" class="tree-container">
+            <div v-loading="loading">
               <el-tree
                 ref="treeRef"
                 :empty-text="state.emptyMessage"
@@ -87,11 +24,7 @@
               />
             </div>
           </div>
-          <!-- <el-empty v-else-if="tree && !tree.length" description="파일이 없습니다." /> -->
-          <!-- <div v-else style="color: #bbb">
-              트리 정보를 조회하려면 토큰을 입력 후 조회를 누르세요.
-            </div> -->
-        </div>
+        </el-scrollbar>
       </div>
     </el-col>
     <!-- 파일 본문 다이얼로그 -->
@@ -310,40 +243,29 @@
     display: flex;
     box-sizing: border-box;
   }
-  .left-col,
-  .right-col {
-    height: 100%;
-    display: flex;
-    align-items: stretch;
-    padding: 0px;
-  }
-  .divider-col {
-    height: 90dvh;
-  }
-  .left-card,
-  .right-card {
-    width: 100%;
-    /* height: calc(100%); */
-    /* min-height: 400px; */
-    display: flex;
-    flex-direction: column;
-    text-align: left;
-  }
-  .right-card {
-    padding: 0;
-  }
   .tree-scroll-area {
     /* flex: 1 1 auto; */
     overflow-y: auto;
-    padding: 0px;
-    height: calc(100vh - 35px);
-  }
-  .tree-container {
-    height: calc(100vh - 35px);
+    padding: 3px 0 0 0;
+    height: calc(100vh - 56px);
+    box-sizing: border-box;
   }
   .mb-2 {
     margin-bottom: 16px;
   }
+  .dialog-float-close {
+    position: fixed;
+    right: 16px;
+    bottom: 16px;
+    z-index: 2001;
+  }
+  .form-input {
+    font-size: 20px;
+    height: 56px;
+    min-height: 56px;
+    z-index: 999;
+  }
+
   /* el-card__body의 높이를 100%로 지정 */
   :deep(.el-card__body) {
     height: calc(100% - 60px);
@@ -359,10 +281,10 @@
     font-size: 12px;
     padding: 0;
   }
-  .dialog-float-close {
-    position: fixed;
-    right: 16px;
-    bottom: 16px;
-    z-index: 2001;
+  :deep(.form-input .el-input__wrapper),
+  :deep(.form-input .el-input__inner) {
+    font-size: 20px;
+    height: 56px;
+    min-height: 56px;
   }
 </style>
