@@ -5,24 +5,37 @@
         <el-input
           class="form-input"
           v-model="filterText"
-          placeholder="Input to filter document titles"
+          placeholder="category or tag"
           style="width: 100%"
           clearable
           @input="onFilterInput"
-        />
+        >
+          <template #prefix>
+            <el-icon>
+              <svg viewBox="0 0 24 24" width="20" height="20">
+                <path
+                  fill="currentColor"
+                  d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5
+                  6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5
+                  4.99c.41.41 1.09.41 1.5 0s.41-1.09 0-1.5l-4.99-5zm-6
+                  0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5
+                  11.99 14 9.5 14z"
+                />
+              </svg>
+            </el-icon>
+          </template>
+        </el-input>
         <el-scrollbar class="tree-scroll-area">
-          <div>
-            <div v-loading="loading">
-              <el-tree
-                ref="treeRef"
-                :empty-text="state.emptyMessage"
-                :data="tree"
-                :filter-node-method="filterNode"
-                :default-expand-all="true"
-                :highlight-current="true"
-                @node-click="onTreeNodeClick"
-              />
-            </div>
+          <div v-loading="loading" class="loading-container">
+            <el-tree
+              ref="treeRef"
+              :empty-text="state.emptyMessage"
+              :data="tree"
+              :filter-node-method="filterNode"
+              :default-expand-all="true"
+              :highlight-current="true"
+              @node-click="onTreeNodeClick"
+            />
           </div>
         </el-scrollbar>
       </div>
@@ -94,7 +107,7 @@
   const token = ref(getTokenFromUrl());
   const repo = ref(null);
   const tree = ref(null);
-  const loading = ref(false);
+  const loading = ref(true);
   const error = ref('');
 
   // 파일 본문 다이얼로그 상태
@@ -106,7 +119,7 @@
   const treeRef = ref();
 
   const state = reactive({
-    emptyMessage: '',
+    emptyMessage: '데이터를 로딩중입니다.',
   });
 
   onMounted(() => {
@@ -167,7 +180,7 @@
     } finally {
       loading.value = false;
       if (tree.value && tree.value.length > 0) {
-        state.emptyMessage = '';
+        state.emptyMessage = '데이터가 존재하지 않습니다.';
       } else {
         state.emptyMessage = '데이터가 존재하지 않습니다.';
       }
@@ -246,9 +259,10 @@
   .tree-scroll-area {
     /* flex: 1 1 auto; */
     overflow-y: auto;
-    padding: 3px 0 0 0;
-    height: calc(100vh - 56px);
+    /* padding: 3px 0 0 0; */
+    height: calc(100vh - 48px);
     box-sizing: border-box;
+    background: #ffffff;
   }
   .mb-2 {
     margin-bottom: 16px;
@@ -261,9 +275,14 @@
   }
   .form-input {
     font-size: 20px;
-    height: 56px;
-    min-height: 56px;
+    height: 48px;
+    min-height: 48px;
     z-index: 999;
+  }
+  .loading-container {
+    position: relative;
+    height: calc(100vh - 48px);
+    width: 100%;
   }
 
   /* el-card__body의 높이를 100%로 지정 */
@@ -283,8 +302,11 @@
   }
   :deep(.form-input .el-input__wrapper),
   :deep(.form-input .el-input__inner) {
-    font-size: 20px;
-    height: 56px;
-    min-height: 56px;
+    font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
+    font-size: 16px;
+    height: 48px;
+  }
+  :deep(.el-loading-mask) {
+    background-color: rgba(255, 255, 255, 0.3);
   }
 </style>
