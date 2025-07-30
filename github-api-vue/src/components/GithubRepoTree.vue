@@ -34,7 +34,11 @@
         </div>
 
         <el-scrollbar ref="treeScrollbar" class="tree-scroll-area">
-          <div v-loading="loading" class="loading-container">
+          <div
+            v-loading="loading"
+            class="loading-container"
+            :element-loading-text="state.loadingText"
+          >
             <el-tree
               ref="treeRef"
               :empty-text="state.emptyMessage"
@@ -137,6 +141,7 @@
     highlightedNodes: [],
     highlightCount: 0,
     highlightSeq: 0, // 현재 하이라이트된 시퀀스
+    loadingText: '로딩중...',
   });
 
   onMounted(() => {
@@ -167,6 +172,7 @@
       async function fetchTree(path = '') {
         const encodedPath = path ? '/' + encodeURIComponent(path).replace(/%2F/g, '/') : '';
         const url = `https://api.github.com/repos/hanjoongcho/self-development/contents${encodedPath}`;
+        state.loadingText = path;
         const res = await axios.get(url, {
           headers: {
             Authorization: `Bearer ${token.value}`,
@@ -308,7 +314,8 @@
     setTimeout(() => {
       const el = document.querySelector('.el-tree-node.is-current');
       if (el) {
-        el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        // el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        el.scrollIntoView();
       }
     }, 200);
   };
@@ -368,7 +375,7 @@
     /* flex: 1 1 auto; */
     overflow-y: auto;
     /* padding: 3px 0 0 0; */
-    height: calc(100vh - 96px);
+    height: calc(100dvh - 96px);
     box-sizing: border-box;
   }
   .mb-2 {
@@ -388,7 +395,7 @@
   }
   .loading-container {
     position: relative;
-    height: calc(100vh - 96px);
+    height: calc(100dvh - 96px);
     width: 100%;
   }
   .toolbar-move-btn {
