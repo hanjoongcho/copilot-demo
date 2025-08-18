@@ -5,7 +5,7 @@
     <el-menu-item index="/sample3">PolarArea</el-menu-item>
   </el-menu>
   <div style="padding: 32px">
-    <h2>Chart.js Pie</h2>
+    <h2>Chart.js PolarArea</h2>
     <div style="display: flex; flex-wrap: wrap; gap: 32px">
       <div v-for="(team, idx) in teams" :key="team" style="flex: 1 1 250px; text-align: center">
         <h3>{{ team }}</h3>
@@ -49,7 +49,7 @@
 
     chartCanvases.value.forEach((canvas, idx) => {
       new Chart(canvas, {
-        type: 'pie',
+        type: 'polarArea',
         data: {
           labels: ['진행전', '진행중', '진행완료'],
           datasets: [
@@ -75,7 +75,8 @@
               font: { weight: 'normal', size: 12 },
               formatter: (value, ctx) => {
                 const label = ctx.chart.data.labels[ctx.dataIndex];
-                return `${label}: ${value}`;
+                // return `${label}: ${value}`;
+                return ``;
               },
             },
           },

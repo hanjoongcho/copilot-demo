@@ -1,11 +1,12 @@
 <template>
   <el-menu :router="true" mode="horizontal" class="nav-menu">
-    <el-menu-item index="/sample1">스택바</el-menu-item>
-    <el-menu-item index="/sample2">파이</el-menu-item>
+    <el-menu-item index="/sample1">StackBar</el-menu-item>
+    <el-menu-item index="/sample2">Pie</el-menu-item>
+    <el-menu-item index="/sample3">PolarArea</el-menu-item>
   </el-menu>
   <div style="padding: 32px">
-    <h2>Chart.js Stack Bar Chart 샘플</h2>
-    <canvas ref="chartCanvas" style="max-width: 600px; height: 400px"></canvas>
+    <h2>Chart.js Stack Bar</h2>
+    <canvas ref="chartCanvas" style="height: 400px"></canvas>
   </div>
 </template>
 
@@ -73,8 +74,19 @@
         responsive: true,
         plugins: {
           legend: { position: 'top' },
-          title: { display: true, text: '부서별 업무 진행 상태 (스택 바 차트)' },
+          title: { display: true, text: '부서별 업무 진행 상태' },
+          datalabels: {
+            color: '#222',
+            font: { weight: 'normal', size: 10 },
+            formatter: (value, ctx) => {
+              console.log(value, ctx);
+              const label = ctx.dataset.label;
+              // return `${label}: ${value}`;
+              return ``;
+            },
+          },
         },
+
         scales: {
           x: { stacked: true },
           y: { stacked: true, max: 60 },
