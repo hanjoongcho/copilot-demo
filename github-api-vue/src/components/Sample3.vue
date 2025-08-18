@@ -24,9 +24,9 @@
     { 진행전: 5, 진행중: 2, 진행완료: 7 },
     { 진행전: 3, 진행중: 4, 진행완료: 5 },
     { 진행전: 2, 진행중: 3, 진행완료: 6 },
-    { 진행전: 4, 진행중: 2, 진행완료: 8 },
-    { 진행전: 1, 진행중: 5, 진행완료: 4 },
-    { 진행전: 2, 진행중: 3, 진행완료: 6 },
+    { 진행전: 0, 진행중: 1, 진행완료: 1 },
+    { 진행전: 0, 진행중: 0, 진행완료: 1 },
+    { 진행전: 0, 진행중: 0, 진행완료: 0 },
   ];
 
   const fillColors = [
@@ -67,6 +67,16 @@
         },
         options: {
           responsive: true,
+          scales: {
+            r: {
+              ticks: {
+                display: false, // ✅ 동심 원 라벨(value) 숨김
+              },
+              grid: {
+                circular: true,
+              },
+            },
+          },
           plugins: {
             legend: { position: 'bottom' },
             title: { display: true, text: '부서별 업무 진행 상태' },
@@ -76,13 +86,37 @@
               formatter: (value, ctx) => {
                 const label = ctx.chart.data.labels[ctx.dataIndex];
                 // return `${label}: ${value}`;
-                return ``;
+                if (value === 0) {
+                  return '';
+                } else {
+                  return `${label}: ${value}`;
+                }
               },
             },
           },
         },
-        plugins: [ChartDataLabels],
+        plugins: [ChartDataLabels, noDataPlugin],
       });
     });
   });
+
+  const noDataPlugin = {
+    id: 'noData',
+    beforeDraw(chart) {
+      const { datasets } = chart.data;
+      const total = datasets[0].data.reduce((a, b) => a + b, 0);
+      if (total === 0) {
+        const {
+          ctx,
+          chartArea: { width, height },
+        } = chart;
+        ctx.save();
+        ctx.font = '16px Arial';
+        ctx.fillStyle = 'gray';
+        ctx.textAlign = 'center';
+        ctx.fillText('No Data', width / 2, height / 2);
+        ctx.restore();
+      }
+    },
+  };
 </script>

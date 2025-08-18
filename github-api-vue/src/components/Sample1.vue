@@ -6,7 +6,7 @@
   </el-menu>
   <div style="padding: 32px">
     <h2>Chart.js Stack Bar</h2>
-    <canvas ref="chartCanvas" style="height: 400px"></canvas>
+    <canvas ref="chartCanvas" style="height: 500px"></canvas>
   </div>
 </template>
 
@@ -17,12 +17,12 @@
 
   // 각 팀별로 합계가 60이 되도록 데이터셋 조정
   const dataByTeam = [
-    { 진행전: 10, 진행중: 20, 진행완료: 30 }, // 기획팀
-    { 진행전: 15, 진행중: 25, 진행완료: 20 }, // 개발팀
-    { 진행전: 20, 진행중: 10, 진행완료: 30 }, // 디자인팀
-    { 진행전: 18, 진행중: 12, 진행완료: 30 }, // 영업팀
-    { 진행전: 12, 진행중: 28, 진행완료: 20 }, // 마케팅팀
-    { 진행전: 25, 진행중: 15, 진행완료: 20 }, // 인사팀
+    { 진행전: 5, 진행중: 2, 진행완료: 7 },
+    { 진행전: 3, 진행중: 4, 진행완료: 5 },
+    { 진행전: 2, 진행중: 3, 진행완료: 6 },
+    { 진행전: 0, 진행중: 1, 진행완료: 1 },
+    { 진행전: 0, 진행중: 0, 진행완료: 1 },
+    { 진행전: 0, 진행중: 0, 진행완료: 0 },
   ];
 
   // 컬러 및 보더 컬러 정의
@@ -50,7 +50,9 @@
             backgroundColor: fillColors[0],
             borderColor: borderColors[0],
             borderWidth: 2,
+            maxBarThickness: 30,
             stack: 'status',
+            borderSkipped: false, // 막대의 경계선이 스킵되지 않도록 설정
           },
           {
             label: '진행중',
@@ -58,7 +60,9 @@
             backgroundColor: fillColors[1],
             borderColor: borderColors[1],
             borderWidth: 2,
+            maxBarThickness: 30,
             stack: 'status',
+            borderSkipped: false, // 막대의 경계선이 스킵되지 않도록 설정
           },
           {
             label: '진행완료',
@@ -66,7 +70,9 @@
             backgroundColor: fillColors[2],
             borderColor: borderColors[2],
             borderWidth: 2,
+            maxBarThickness: 30,
             stack: 'status',
+            borderSkipped: false, // 막대의 경계선이 스킵되지 않도록 설정
           },
         ],
       },
@@ -88,8 +94,10 @@
         },
 
         scales: {
-          x: { stacked: true },
-          y: { stacked: true, max: 60 },
+          x: {
+            stacked: true,
+          },
+          y: { stacked: true, max: 14 },
         },
       },
     });
