@@ -26,11 +26,16 @@
           </template>
         </el-input>
         <div class="top-toolbar">
-          <el-tag v-if="state.highlightSeq > 0">{{
-            `${state.highlightSeq} / ${state.highlightedNodes.length}`
-          }}</el-tag>
-          <el-tag @click="handleHighlightPrevious">↑</el-tag>
-          <el-tag @click="handleHighlightNext">↓</el-tag>
+          <div>
+            <el-tag effect="dark">Total: {{ state.totalCount }}</el-tag>
+          </div>
+          <div>
+            <el-tag v-if="state.highlightSeq > 0">{{
+              `${state.highlightSeq} / ${state.highlightedNodes.length}`
+            }}</el-tag>
+            <el-tag class="tag-button" @click="handleHighlightPrevious">↑</el-tag>
+            <el-tag class="tag-button" @click="handleHighlightNext">↓</el-tag>
+          </div>
         </div>
 
         <el-scrollbar ref="treeScrollbar" class="tree-scroll-area">
@@ -50,7 +55,7 @@
               @node-click="onTreeNodeClick"
             >
               <template #default="{ node, data }">
-                <span v-html="highlightLabel(data.label)"></span>
+                <span class="tree-label-ellipsis" v-html="highlightLabel(data.label)"></span>
               </template>
             </el-tree>
           </div>
@@ -118,6 +123,7 @@
 
   function getTokenFromUrl() {
     const params = new URLSearchParams(window.location.search);
+    console.log(params);
     return params.get('token') || '';
   }
 
@@ -139,6 +145,7 @@
   const state = reactive({
     emptyMessage: '데이터를 로딩중입니다.',
     highlightedNodes: [],
+    totalCount: 0,
     highlightCount: 0,
     highlightSeq: 0, // 현재 하이라이트된 시퀀스
     loadingText: '로딩중...',
@@ -158,6 +165,7 @@
     loading.value = true;
     repo.value = null;
     tree.value = null;
+    state.totalCount = 0;
     try {
       // 저장소 정보
       const repoRes = await axios.get('https://api.github.com/repos/hanjoongcho/self-development', {
@@ -189,10 +197,16 @@
                   children: await fetchTree(item.path),
                 };
               } else {
-                return { ...item, label: item.name };
+                // .md 파일만 추가
+                if (item.name?.toLowerCase().endsWith('.md')) {
+                  state.totalCount++;
+                  return { ...item, label: item.name };
+                }
+                // .md가 아니면 트리에서 제외
+                return null;
               }
             })
-          );
+          ).then(nodes => nodes.filter(Boolean)); // null 제거
         } else {
           return [];
         }
@@ -220,6 +234,7 @@
     if (data.path) {
       // 확장자가 .md가 아니면 안내 메시지 후 팝업 열지 않음
       if (!data.name?.toLowerCase().endsWith('.md')) {
+        console.log(data.name?.toLowerCase());
         ElMessageBox.alert('마크다운 파일(.md)만 상세보기가 가능합니다.', '알림', {
           confirmButtonText: '확인',
           type: 'warning',
@@ -354,7 +369,7 @@
   .top-toolbar {
     height: 48px;
     display: flex;
-    justify-content: flex-end;
+    justify-content: space-between;
     align-items: center;
     margin-bottom: 0px;
     padding: 0 16px;
@@ -429,10 +444,29 @@
   :deep(.el-loading-mask) {
     background-color: rgba(255, 255, 255, 0.3);
   }
+  .top-toolbar :deep(.el-tag) {
+    padding: 15px 10px;
+  }
+  :deep(.el-tag__content) {
+    font-size: 15px;
+  }
   mark {
     background: #ffe066;
     color: #222;
     padding: 0 2px;
     border-radius: 2px;
+  }
+  .tree-label-ellipsis {
+    display: inline-block;
+    max-width: 80vw;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    vertical-align: middle;
+  }
+  .tag-button {
+    cursor: pointer;
+    user-select: none;
+    margin-left: 5px;
   }
 </style>

@@ -1,8 +1,14 @@
 <!-- filepath: src/App.vue -->
 <template>
-  <GithubRepoTree />
+  <router-view />
 </template>
 
 <script setup>
-import GithubRepoTree from './components/GithubRepoTree.vue'
+  import { ElMenu, ElMenuItem } from 'element-plus';
 </script>
+
+<style scoped>
+  .nav-menu {
+    margin-bottom: 16px;
+  }
+</style>
