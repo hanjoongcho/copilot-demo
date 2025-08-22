@@ -6,7 +6,10 @@ export default defineNuxtConfig({
   css: ['element-plus/dist/index.css'],
   ssr: false,
   app: {
-    baseURL: '/nuxt-vue3/', // GitHub Pages repo name
+    baseURL: '/copilot-demo/', // GitHub Pages repo name
     buildAssetsDir: 'assets',
+  },
+  nitro: {
+    preset: 'static', // 정적 사이트 생성
   },
 });
