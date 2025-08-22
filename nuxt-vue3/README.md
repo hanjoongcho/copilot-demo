@@ -2,6 +2,18 @@
 
 Look at the [Nuxt documentation](https://nuxt.com/docs/getting-started/introduction) to learn more.
 
+## GitHub Pages Manual Deploy
+
+```
+# -b 옵션은 브랜치 생성
+# 이미 브랜치가 있다면 -b 옵션은 제외함
+git checkout -b gh-pages
+cp -r .output/public/* .
+git add .
+git commit -m "Deploy Nuxt 3 Static Site"
+git push origin gh-pages --force
+```
+
 ## Setup
 
 Make sure to install dependencies:
